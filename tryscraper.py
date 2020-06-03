@@ -8,14 +8,16 @@ import xlrd
 import xlsxwriter
 import xlwt
 from xlwt import Workbook
+import nltk
+nltk.download()
 
 # Give the location of the file
-loc = ('/home/adit/cik_list.xlsx')
-locw = ('/home/adit/OutputDataStructure.xlsx')
+loc = ('E:\\blackcoffer data science\cik_list.xlsx')
+locw = ('E:\\blackcoffer data science\OutputDataStructure.xlsx')
 # To open Workbook
 wb = xlrd.open_workbook(loc)
 sheet = wb.sheet_by_index(0)
-workbook = xlsxwriter.Workbook('Example.xlsx')
+workbook = xlsxwriter.Workbook('Data.xlsx')
 sheet1 = workbook.add_worksheet()
 sys.setrecursionlimit(100000)
 # For row 0 and column 0
@@ -123,7 +125,7 @@ for i in range(1, 152):
         """
         loading positive dictionary
         """
-        myfile = open('/home/adit/positive.csv', "r")
+        myfile = open('E:\\blackcoffer data science\\positive.csv', "r")
         positives = myfile.readlines()
         positive = [pos.strip().lower() for pos in positives]
         return positive
@@ -132,7 +134,7 @@ for i in range(1, 152):
         """
         loading positive dictionary
         """
-        myfile = open('/home/adit/negative.csv', "r")
+        myfile = open('E:\\blackcoffer data science\\negative.csv', "r")
         negatives = myfile.readlines()
         negative = [neg.strip().lower() for neg in negatives]
         return negative
@@ -141,7 +143,7 @@ for i in range(1, 152):
         """
         loading constraining dictionary
         """
-        myfile = open('/home/adit/constrain.csv', "r")
+        myfile = open('E:\\blackcoffer data science\\constrain.csv', "r")
         constrains = myfile.readlines()
         constrain = [con.strip().lower() for con in constrains]
         return constrain
@@ -150,7 +152,7 @@ for i in range(1, 152):
         """
         loading uncertainity dictionary
         """
-        myfile = open('/home/adit/uncertain.csv', "r")
+        myfile = open('E:\\blackcoffer data science\\uncertain.csv', "r")
         uncertains = myfile.readlines()
         uncertain = [un.strip().lower() for un in uncertains]
         return uncertain
@@ -268,15 +270,27 @@ for i in range(1, 152):
         qqd_uncertain_count = countUn(obj_clean, uncertain)
         qqd_polarity = getSentiment(obj_clean, negative, positive)
         qqd_word_count = len(obj_clean)
-        qqd_avg_sentence_lenght = len(qqd.split())/qqd.count('.')
+        if qqd.count('.')==0:
+            qqd_avg_sentence_lenght = len(qqd.split())/qqd.count('.')
+        else:
+            qqd_avg_sentence_lenght = len(qqd.split())/qqd.count('.')
+            
         qqd_complex_words = complex_word(obj_clean)
-        qqd_percentage_complex_words = (qqd_complex_words/qqd_word_count)*100
-        qqd_fog_idex = 0.4*(qqd_avg_sentence_lenght +
-                            qqd_percentage_complex_words)
-        qqd_positive_ratio = qqd_positive_count/qqd_word_count
-        qqd_negative_ratio = qqd_negative_count/qqd_word_count
-        qqd_uncertain_ratio = qqd_uncertain_count/qqd_word_count
-        qqd_constrain_ratio = qqd_constrain_count/qqd_word_count
+        if qqd_word_count == 0:
+            qqd_percentage_complex_words = ""
+            qqd_positive_ratio = ""
+            qqd_negative_ratio = ""
+            qqd_uncertain_ratio = ""
+            qqd_constrain_ratio = ""
+            qqd_fog_idex = ""
+        else:
+            qqd_percentage_complex_words = (qqd_complex_words/qqd_word_count)*100
+            qqd_fog_idex = 0.4*(qqd_avg_sentence_lenght + qqd_percentage_complex_words)
+            qqd_positive_ratio = qqd_positive_count/qqd_word_count
+            qqd_negative_ratio = qqd_negative_count/qqd_word_count
+            qqd_uncertain_ratio = qqd_uncertain_count/qqd_word_count
+            qqd_constrain_ratio = qqd_constrain_count/qqd_word_count
+        
         rf_positive_count = ""
         rf_negative_count = ""
         rf_constrain_count = ""
@@ -696,7 +710,7 @@ for i in range(1, 152):
     sheet1.write(i, 37, rf_uncertain_count)
     sheet1.write(i, 38, rf_constrain_count)
     sheet1.write(i, 39, rf_positive_ratio)
-    sheet1.write(i, 41, rf_negative_ratio)
-    sheet1.write(i, 42, rf_constrain_ratio)
-    sheet1.write(i, 43, total_cons)
+    sheet1.write(i, 40, rf_negative_ratio)
+    sheet1.write(i, 41, rf_constrain_ratio)
+    sheet1.write(i, 42, total_cons)
 workbook.close()
